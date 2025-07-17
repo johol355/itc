@@ -36,7 +36,7 @@ jobs:
       uses: quarto-dev/quarto-actions/setup@v2
       with:
         version: 'release'
-        tinytex: true
+        tinytex: false
         
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -75,14 +75,8 @@ jobs:
               rm -rf "guidelines/docs"
             fi
             
-            # Try to render to PDF (with fallback)
-            if quarto render "$file" --to pdf --output-dir pdfs 2>/dev/null; then
-              echo "✓ PDF generated: $filename"
-            else
-              echo "⚠ PDF generation failed for: $filename (HTML still available)"
-              # Create a placeholder PDF notice
-              echo "PDF generation failed. Please use the HTML version for interactive features." > "pdfs/$filename.txt"
-            fi
+            # Skip PDF generation in CI (focus on HTML for PWA)
+            echo "ℹ Skipping PDF generation in CI (HTML version available)"
             
             echo "✓ Processed: $filename"
           fi

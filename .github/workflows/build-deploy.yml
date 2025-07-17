@@ -111,6 +111,9 @@ jobs:
       
     - name: Generate guidelines index
       run: node scripts/generate-index.js
+      
+    - name: Update cache version
+      run: node scripts/update-cache-version.js
         
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3

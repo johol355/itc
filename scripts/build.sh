@@ -67,6 +67,10 @@ fi
 # Generate JSON index of guidelines for the web app
 node scripts/generate-index.js
 
+# Update cache version to force cache refresh
+echo "Updating cache version..."
+node scripts/update-cache-version.js
+
 echo "Build complete!"
 echo "📄 PDFs generated in: pdfs/"
 echo "🌐 HTML files generated in: docs/guidelines/"

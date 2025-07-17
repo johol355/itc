@@ -1,7 +1,8 @@
 // Service Worker for Medical Guidelines PWA - Offline First
-const CACHE_NAME = 'medical-guidelines-v5';
-const STATIC_CACHE = 'static-v5';
-const GUIDELINES_CACHE = 'guidelines-v5';
+const CACHE_VERSION = 'v6'; // Increment this when content changes
+const CACHE_NAME = `medical-guidelines-${CACHE_VERSION}`;
+const STATIC_CACHE = `static-${CACHE_VERSION}`;
+const GUIDELINES_CACHE = `guidelines-${CACHE_VERSION}`;
 
 // Critical assets that MUST be cached immediately
 const STATIC_ASSETS = [

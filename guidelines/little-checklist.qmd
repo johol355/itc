@@ -1,0 +1,31 @@
+---
+title: "New Checklist"
+author: "Medical Team"
+date: "2025-05-17"
+version: "1.0"
+status: "Draft"
+keywords: ["checklist", "start"]
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    include-after-body: 
+      - text: |
+          <link rel="stylesheet" href="../_extensions/checklist/checklist.css">
+          <script src="../_extensions/checklist/checklist.js"></script>
+  pdf:
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 11pt
+---
+
+## Overview
+
+A checklist
+
+## List
+
+::: {.checklist id="pre-procedure-checklist" title="Pre-Procedure Checklist"}
+- [ ] hi how
+- [ ] are you?
+:::

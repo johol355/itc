@@ -77,7 +77,7 @@ Step-by-step procedure or treatment protocol.
 
 What to monitor during treatment.
 
-### Monitoring Checklist {#monitoring}
+### Patient Monitoring Checklist {#patient-monitoring}
 
 ::: {.checklist id="monitoring-checklist" title="Patient Monitoring"}
 - [ ] Blood pressure within normal range

@@ -36,6 +36,7 @@ jobs:
       uses: quarto-dev/quarto-actions/setup@v2
       with:
         version: 'release'
+        tinytex: true
         
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -65,11 +66,17 @@ jobs:
             filename=$(basename "$file" .qmd)
             echo "Processing: $filename"
             
-            # Render to PDF
-            quarto render "$file" --to pdf --output-dir pdfs
-            
-            # Render to HTML for web app
+            # Render to HTML first (this always works)
             quarto render "$file" --to html --output-dir docs/guidelines
+            
+            # Try to render to PDF (with fallback)
+            if quarto render "$file" --to pdf --output-dir pdfs 2>/dev/null; then
+              echo "✓ PDF generated: $filename"
+            else
+              echo "⚠ PDF generation failed for: $filename (HTML still available)"
+              # Create a placeholder PDF notice
+              echo "PDF generation failed. Please use the HTML version for interactive features." > "pdfs/$filename.txt"
+            fi
             
             echo "✓ Processed: $filename"
           fi

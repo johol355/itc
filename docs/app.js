@@ -31,7 +31,8 @@ class MedicalGuidelinesApp {
             this.guidelines = data.guidelines.map(guideline => ({
                 id: guideline.id,
                 title: guideline.title,
-                description: `Medical guideline: ${guideline.title}`,
+                description: guideline.description || `Medical guideline: ${guideline.title}`,
+                keywords: guideline.keywords || [],
                 htmlContent: null // Will be loaded on demand
             }));
         } catch (error) {
@@ -76,9 +77,13 @@ class MedicalGuidelinesApp {
     }
     
     filterGuidelines(searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
         const filteredGuidelines = this.guidelines.filter(guideline => 
-            guideline.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            guideline.description.toLowerCase().includes(searchTerm.toLowerCase())
+            guideline.title.toLowerCase().includes(searchLower) ||
+            guideline.description.toLowerCase().includes(searchLower) ||
+            (guideline.keywords && guideline.keywords.some(keyword => 
+                keyword.toLowerCase().includes(searchLower)
+            ))
         );
         this.renderFilteredGuidelines(filteredGuidelines);
     }

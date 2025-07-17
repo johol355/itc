@@ -1,0 +1,96 @@
+---
+title: "Impella Test"
+author: "Medical Team"
+date: "2025-01-17"
+version: "1.0"
+status: "Draft"
+keywords: ["impella", "mcs"]
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    include-after-body: 
+      - text: |
+          <link rel="stylesheet" href="../_extensions/checklist/checklist.css">
+          <script src="../_extensions/checklist/checklist.js"></script>
+  pdf:
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 11pt
+---
+
+## Overview
+
+This is a test guideline for Impella mechanical circulatory support (MCS) device.
+
+## Indication
+
+Brief description of when Impella MCS device is indicated.
+
+## Contraindications
+
+List of contraindications for Impella placement.
+
+## Procedure
+
+Step-by-step procedure for Impella insertion and management.
+
+### Pre-Procedure Checklist {#pre-impella}
+
+::: {.checklist id="pre-impella-checklist" title="Pre-Impella Checklist"}
+- [ ] Verify patient identity and consent
+- [ ] Review medical history and allergies
+- [ ] Confirm vascular access site
+- [ ] Ensure Impella device is available and functional
+- [ ] Complete pre-procedure timeout
+- [ ] Verify emergency protocols are in place
+:::
+
+### Procedure Steps
+
+1. **Preparation**
+   - Follow standard precautions
+   - Position patient appropriately
+   - Prepare sterile field
+
+2. **Impella Insertion**
+   - Perform according to protocol
+   - Monitor hemodynamics continuously
+   - Document all steps
+
+3. **Completion**
+   - Ensure proper positioning
+   - Secure device appropriately
+   - Move patient to ICU
+
+### Post-Procedure Checklist {#post-impella}
+
+::: {.checklist id="post-impella-checklist" title="Post-Impella Checklist"}
+- [ ] Monitor hemodynamics stable
+- [ ] Assess vascular access site
+- [ ] Document procedure details
+- [ ] ICU monitoring initiated
+- [ ] Device settings optimized
+- [ ] Follow-up imaging scheduled
+:::
+
+## Monitoring
+
+What to monitor during Impella support.
+
+### Impella Monitoring Checklist {#impella-monitoring}
+
+::: {.checklist id="impella-monitoring-checklist" title="Impella Monitoring"}
+- [ ] Pump flow adequate
+- [ ] Pressure waveforms normal
+- [ ] No signs of hemolysis
+- [ ] Vascular access intact
+- [ ] Anticoagulation appropriate
+- [ ] Device alarms addressed
+- [ ] Patient hemodynamically stable
+:::
+
+## References
+
+1. Impella Reference 1
+2. MCS Reference 2

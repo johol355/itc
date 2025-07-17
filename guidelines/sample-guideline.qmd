@@ -4,6 +4,7 @@ author: "Medical Team"
 date: "2025-01-17"
 version: "1.0"
 status: "Draft"
+keywords: ["procedure", "checklist", "monitoring", "medical", "surgical", "patient safety", "protocol"]
 format:
   html:
     toc: true

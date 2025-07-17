@@ -2,32 +2,136 @@
 class MedicalGuidelinesApp {
     constructor() {
         this.guidelines = [];
+        this.loadProgress = 0;
+        this.loadSteps = [
+            { progress: 10, message: "Initializing application..." },
+            { progress: 30, message: "Registering service worker..." },
+            { progress: 50, message: "Loading guidelines index..." },
+            { progress: 70, message: "Caching guidelines for offline access..." },
+            { progress: 90, message: "Preparing interface..." },
+            { progress: 100, message: "Ready!" }
+        ];
+        this.currentStep = 0;
         this.init();
     }
     
-    init() {
+    async init() {
+        // Initialize dark mode
+        this.initDarkMode();
+        
+        // Start load sequence
+        this.updateLoadProgress();
         // Register service worker for PWA functionality
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then((registration) => {
+            this.updateLoadProgress(); // Step 2
+            try {
+                const registration = await navigator.serviceWorker.register('sw.js');
                 console.log('Service Worker registered:', registration);
                 
-                // Listen for content updates
+                // Listen for content updates and caching progress
                 navigator.serviceWorker.addEventListener('message', (event) => {
                     if (event.data.type === 'CONTENT_UPDATED') {
                         console.log('Content updated, refreshing guidelines...');
                         this.loadGuidelines(); // Silently reload guidelines
+                    } else if (event.data.type === 'CACHE_COMPLETE') {
+                        this.updateLoadProgress(); // Step 4 - Caching complete
                     }
                 });
-            }).catch((error) => {
+                
+                // Listen for service worker installation progress
+                if (registration.installing) {
+                    registration.installing.addEventListener('statechange', () => {
+                        if (registration.installing.state === 'installed') {
+                            // Fallback in case message doesn't arrive
+                            setTimeout(() => this.updateLoadProgress(), 1000);
+                        }
+                    });
+                }
+            } catch (error) {
                 console.log('Service Worker registration failed:', error);
-            });
+            }
         }
         
         // Load guidelines
-        this.loadGuidelines();
+        this.updateLoadProgress(); // Step 3
+        await this.loadGuidelines();
         
         // Setup search
         this.setupSearch();
+        
+        // Final steps
+        this.updateLoadProgress(); // Step 5
+        await this.delay(500); // Brief pause for UX
+        this.updateLoadProgress(); // Step 6 - Complete
+        
+        // Hide load screen and show app
+        await this.delay(300);
+        this.hideLoadScreen();
+    }
+    
+    updateLoadProgress() {
+        if (this.currentStep < this.loadSteps.length) {
+            const step = this.loadSteps[this.currentStep];
+            const progressBar = document.getElementById('load-progress');
+            const progressPercent = document.getElementById('load-percentage');
+            const statusMessage = document.getElementById('load-status');
+            
+            if (progressBar) progressBar.style.width = step.progress + '%';
+            if (progressPercent) progressPercent.textContent = step.progress + '%';
+            if (statusMessage) statusMessage.textContent = step.message;
+            
+            this.currentStep++;
+        }
+    }
+    
+    async delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    hideLoadScreen() {
+        const loadScreen = document.getElementById('load-screen');
+        const app = document.getElementById('app');
+        
+        if (loadScreen) {
+            loadScreen.style.opacity = '0';
+            loadScreen.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                loadScreen.style.display = 'none';
+            }, 500);
+        }
+        
+        if (app) {
+            app.classList.remove('app-hidden');
+            app.style.opacity = '0';
+            app.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                app.style.opacity = '1';
+            }, 100);
+        }
+    }
+    
+    initDarkMode() {
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        
+        // Apply saved theme
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Update button text
+                darkModeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            });
+            
+            // Set initial button text
+            darkModeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        }
     }
     
     async loadGuidelines() {

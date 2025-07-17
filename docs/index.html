@@ -10,9 +10,30 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="app">
+    <!-- Load Screen -->
+    <div id="load-screen" class="load-screen">
+        <div class="load-content">
+            <img src="itc-logo.jpg" alt="Karolinska ITC" class="load-logo">
+            <h2 class="load-title">Medical Guidelines</h2>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="load-progress"></div>
+                </div>
+                <div class="progress-percentage" id="load-percentage">0%</div>
+            </div>
+            <p class="load-status" id="load-status">Initializing application...</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app-hidden">
         <header>
-            <h1>Medical Guidelines</h1>
+            <div class="header-content">
+                <h1>Medical Guidelines</h1>
+                <button id="dark-mode-toggle" class="dark-mode-toggle" title="Toggle Dark Mode">
+                    🌙
+                </button>
+            </div>
         </header>
         
         <main>

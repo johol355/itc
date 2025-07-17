@@ -1,0 +1,14 @@
+# GitHub Pages configuration
+# This file is not strictly necessary but documents the Pages setup
+
+# GitHub Pages will serve from the docs/ directory
+# The build process outputs to docs/ and deploys automatically
+# 
+# To enable:
+# 1. Go to your repository settings
+# 2. Navigate to Pages section
+# 3. Select "GitHub Actions" as the source
+# 4. The workflow will handle the rest
+
+source: docs/
+domain: # Set your custom domain here if desired

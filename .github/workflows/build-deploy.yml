@@ -1,0 +1,123 @@
+name: Build and Deploy Medical Guidelines
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'guidelines/**/*.qmd'
+      - 'docs/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'guidelines/**/*.qmd'
+      - 'docs/**'
+      - 'scripts/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Quarto
+      uses: quarto-dev/quarto-actions/setup@v2
+      with:
+        version: 'release'
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Create output directories
+      run: |
+        mkdir -p pdfs
+        mkdir -p docs/guidelines
+        
+    - name: Copy checklist assets
+      run: |
+        # Copy checklist CSS and JS to docs for PWA
+        cp -r _extensions/checklist/checklist.css docs/
+        cp -r _extensions/checklist/checklist.js docs/
+        
+        # Copy to docs/guidelines for HTML output
+        mkdir -p docs/guidelines/_extensions/checklist
+        cp -r _extensions/checklist/* docs/guidelines/_extensions/checklist/
+        
+    - name: Build guidelines
+      run: |
+        echo "Building Medical Guidelines..."
+        
+        # Convert Quarto files to PDFs and HTML
+        for file in guidelines/*.qmd; do
+          if [ -f "$file" ]; then
+            filename=$(basename "$file" .qmd)
+            echo "Processing: $filename"
+            
+            # Render to PDF
+            quarto render "$file" --to pdf --output-dir pdfs
+            
+            # Render to HTML for web app
+            quarto render "$file" --to html --output-dir docs/guidelines
+            
+            echo "✓ Processed: $filename"
+          fi
+        done
+        
+        echo "Build complete!"
+        
+    - name: Generate guidelines index
+      run: |
+        # Create a simple JSON index of available guidelines
+        echo '{"guidelines": [' > docs/guidelines/index.json
+        first=true
+        for file in guidelines/*.qmd; do
+          if [ -f "$file" ]; then
+            filename=$(basename "$file" .qmd)
+            title=$(grep -m 1 '^title:' "$file" | sed 's/title: *"*\([^"]*\)"*/\1/' || echo "$filename")
+            
+            if [ "$first" = true ]; then
+              first=false
+            else
+              echo ',' >> docs/guidelines/index.json
+            fi
+            
+            echo "  {\"id\": \"$filename\", \"title\": \"$title\", \"html\": \"$filename.html\", \"pdf\": \"../pdfs/$filename.pdf\"}" >> docs/guidelines/index.json
+          fi
+        done
+        echo ']' >> docs/guidelines/index.json
+        echo '}' >> docs/guidelines/index.json
+        
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: docs/
+        
+    - name: Upload PDFs artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: guidelines-pdfs
+        path: pdfs/
+        
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

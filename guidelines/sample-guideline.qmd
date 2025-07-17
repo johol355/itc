@@ -1,0 +1,95 @@
+---
+title: "Sample Medical Guideline"
+author: "Medical Team"
+date: "2025-01-17"
+version: "1.0"
+status: "Draft"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    include-after-body: 
+      - text: |
+          <link rel="stylesheet" href="../_extensions/checklist/checklist.css">
+          <script src="../_extensions/checklist/checklist.js"></script>
+  pdf:
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 11pt
+---
+
+## Overview
+
+This is a sample medical guideline template.
+
+## Indication
+
+Brief description of when this guideline applies.
+
+## Contraindications
+
+List of contraindications.
+
+## Procedure
+
+Step-by-step procedure or treatment protocol.
+
+### Pre-Procedure Checklist {#pre-procedure}
+
+::: {.checklist id="pre-procedure-checklist" title="Pre-Procedure Checklist"}
+- [ ] Verify patient identity and consent
+- [ ] Review medical history and allergies
+- [ ] Confirm procedure site and laterality
+- [ ] Ensure all equipment is available and sterile
+- [ ] Complete pre-procedure timeout
+- [ ] Verify emergency protocols are in place
+:::
+
+### Procedure Steps
+
+1. **Preparation**
+   - Follow standard precautions
+   - Position patient appropriately
+   - Prepare sterile field
+
+2. **Procedure Execution**
+   - Perform according to protocol
+   - Monitor vital signs continuously
+   - Document all steps
+
+3. **Completion**
+   - Ensure hemostasis
+   - Apply appropriate dressing
+   - Move patient to recovery
+
+### Post-Procedure Checklist {#post-procedure}
+
+::: {.checklist id="post-procedure-checklist" title="Post-Procedure Checklist"}
+- [ ] Monitor vital signs stable
+- [ ] Assess procedure site for complications
+- [ ] Document procedure details
+- [ ] Patient education completed
+- [ ] Discharge instructions provided
+- [ ] Follow-up appointment scheduled
+:::
+
+## Monitoring
+
+What to monitor during treatment.
+
+### Monitoring Checklist {#monitoring}
+
+::: {.checklist id="monitoring-checklist" title="Patient Monitoring"}
+- [ ] Blood pressure within normal range
+- [ ] Heart rate and rhythm stable
+- [ ] Respiratory rate adequate
+- [ ] Temperature within normal limits
+- [ ] Pain level assessed and managed
+- [ ] Neurological status unchanged
+- [ ] Surgical site without bleeding
+:::
+
+## References
+
+1. Reference 1
+2. Reference 2

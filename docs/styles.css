@@ -1,0 +1,249 @@
+/* Medical Guidelines PWA Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f5f5f5;
+}
+
+header {
+    background: #2196F3;
+    color: white;
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+nav a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+section {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.guideline-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.guideline-card h3 {
+    color: #2196F3;
+    margin-bottom: 0.5rem;
+}
+
+.guideline-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #2196F3;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.3s;
+    font-size: 0.9rem;
+}
+
+.button:hover {
+    background: #1976D2;
+}
+
+.button.secondary {
+    background: #666;
+}
+
+.button.secondary:hover {
+    background: #555;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .guideline-actions {
+        flex-direction: column;
+    }
+    
+    main {
+        padding: 0 0.5rem;
+    }
+}
+
+/* Hide sections by default (SPA navigation) */
+main section {
+    display: none;
+}
+
+main section:first-child {
+    display: block;
+}
+
+/* Interactive Checklist Styles */
+.interactive-checklist {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    background: #fafafa;
+}
+
+.checklist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.checklist-header h4 {
+    margin: 0;
+    color: #2196F3;
+}
+
+.checklist-reset {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.3s;
+}
+
+.checklist-reset:hover {
+    background: #d32f2f;
+}
+
+.checklist-items {
+    margin-bottom: 1rem;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.checklist-item:hover {
+    background: #f0f0f0;
+}
+
+.checklist-checkbox {
+    margin-right: 0.75rem;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #2196F3;
+}
+
+.checklist-item label {
+    cursor: pointer;
+    flex-grow: 1;
+    user-select: none;
+    transition: color 0.3s;
+}
+
+.checklist-item input:checked + label {
+    color: #666;
+    text-decoration: line-through;
+}
+
+.checklist-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-bar {
+    flex-grow: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4caf50;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.progress-text {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.interactive-checklist.completed {
+    animation: checklistComplete 0.5s ease-in-out;
+}
+
+.interactive-checklist.reset {
+    animation: checklistReset 0.3s ease-in-out;
+}
+
+@keyframes checklistComplete {
+    0% { background: #fafafa; }
+    50% { background: #e8f5e8; }
+    100% { background: #fafafa; }
+}
+
+@keyframes checklistReset {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.98); }
+    100% { transform: scale(1); }
+}

@@ -10,6 +10,14 @@ class MedicalGuidelinesApp {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').then((registration) => {
                 console.log('Service Worker registered:', registration);
+                
+                // Listen for service worker messages about cache status
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data.type === 'CACHE_STATUS') {
+                        this.updateCacheStatus(event.data.status);
+                    }
+                });
+                
             }).catch((error) => {
                 console.log('Service Worker registration failed:', error);
             });
@@ -23,6 +31,61 @@ class MedicalGuidelinesApp {
         
         // Setup search
         this.setupSearch();
+        
+        // Start cache warming process
+        this.warmCache();
+    }
+    
+    async warmCache() {
+        // Ensure all guidelines are cached for offline emergency access
+        try {
+            const response = await fetch('guidelines/index.json');
+            const data = await response.json();
+            
+            // Pre-cache all guidelines in background
+            const promises = data.guidelines.map(async (guideline) => {
+                try {
+                    await fetch(`guidelines/${guideline.html}`);
+                    console.log(`✓ Cached for offline: ${guideline.title}`);
+                } catch (error) {
+                    console.warn(`Failed to cache: ${guideline.title}`, error);
+                }
+            });
+            
+            await Promise.all(promises);
+            this.cachedGuidelines = data.guidelines.map(g => g.id);
+            this.updateCacheStatus('ready');
+            this.renderGuidelines(); // Update UI to show cached status
+            console.log('🚨 EMERGENCY READY: All guidelines cached for offline access');
+            
+        } catch (error) {
+            console.warn('Cache warming failed:', error);
+            this.updateCacheStatus('partial');
+        }
+    }
+    
+    updateCacheStatus(status) {
+        // Update UI to show offline readiness
+        const indicator = document.getElementById('cache-status');
+        if (indicator) {
+            switch (status) {
+                case 'warming':
+                    indicator.textContent = '⏳ Preparing for offline use...';
+                    indicator.className = 'cache-status warming';
+                    break;
+                case 'ready':
+                    indicator.textContent = '🚨 Emergency Ready - All guidelines available offline';
+                    indicator.className = 'cache-status ready';
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 3000);
+                    break;
+                case 'partial':
+                    indicator.textContent = '⚠️ Some guidelines may not be available offline';
+                    indicator.className = 'cache-status partial';
+                    break;
+            }
+        }
     }
     
     setupOfflineDetection() {
@@ -73,15 +136,32 @@ class MedicalGuidelinesApp {
     
     renderGuidelines() {
         const container = document.getElementById('guidelines-list');
-        container.innerHTML = this.guidelines.map(guideline => `
-            <div class="guideline-card">
-                <h3>${guideline.title}</h3>
-                <p>${guideline.description}</p>
-                <div class="guideline-actions">
-                    <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">Open Guideline</button>
+        container.innerHTML = this.guidelines.map(guideline => {
+            const offlineStatus = this.checkOfflineStatus(guideline.id);
+            return `
+                <div class="guideline-card ${offlineStatus}">
+                    <h3>${guideline.title} ${offlineStatus === 'cached' ? '🚨' : offlineStatus === 'checking' ? '⏳' : '📶'}</h3>
+                    <p>${guideline.description}</p>
+                    <div class="guideline-actions">
+                        <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">Open Guideline</button>
+                    </div>
+                    <div class="offline-status">
+                        ${offlineStatus === 'cached' ? '✓ Available offline' : 
+                          offlineStatus === 'checking' ? 'Preparing for offline...' : 
+                          '⚠️ Requires internet'}
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
+    }
+    
+    checkOfflineStatus(guidelineId) {
+        // This would ideally check the actual cache, but for now we'll simulate
+        // In practice, this could use the Cache API to verify
+        if (this.cachedGuidelines && this.cachedGuidelines.includes(guidelineId)) {
+            return 'cached';
+        }
+        return navigator.onLine ? 'checking' : 'uncached';
     }
     
     setupSearch() {

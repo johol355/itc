@@ -406,6 +406,40 @@ main section {
     cursor: not-allowed;
 }
 
+/* Guideline offline status styling */
+.guideline-card.cached {
+    border-left: 4px solid #28a745;
+    background: #f8fff8;
+}
+
+.guideline-card.checking {
+    border-left: 4px solid #ffc107;
+    background: #fffbf0;
+}
+
+.guideline-card.uncached {
+    border-left: 4px solid #dc3545;
+    background: #fff5f5;
+}
+
+.offline-status {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-weight: 600;
+}
+
+.guideline-card.cached .offline-status {
+    color: #28a745;
+}
+
+.guideline-card.checking .offline-status {
+    color: #856404;
+}
+
+.guideline-card.uncached .offline-status {
+    color: #dc3545;
+}
+
 /* Offline indicator */
 .offline-indicator {
     position: fixed;
@@ -423,6 +457,37 @@ main section {
 
 .offline-indicator.show {
     transform: translateY(0);
+}
+
+/* Cache status indicator */
+.cache-status {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 0.75rem;
+    z-index: 1000;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cache-status.warming {
+    background: #fff3cd;
+    color: #856404;
+    border-top: 2px solid #ffc107;
+}
+
+.cache-status.ready {
+    background: #d4edda;
+    color: #155724;
+    border-top: 2px solid #28a745;
+}
+
+.cache-status.partial {
+    background: #f8d7da;
+    color: #721c24;
+    border-top: 2px solid #dc3545;
 }
 
 /* Responsive adjustments */

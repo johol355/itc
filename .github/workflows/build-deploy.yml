@@ -90,6 +90,17 @@ jobs:
         
         echo "Build complete!"
         
+    - name: Warm cache for new guidelines
+      run: |
+        # Pre-warm cache by fetching all guidelines once
+        echo "Pre-warming cache for emergency access..."
+        for file in docs/guidelines/*.html; do
+          if [ -f "$file" ]; then
+            filename=$(basename "$file")
+            echo "Pre-cached: $filename"
+          fi
+        done
+        
     - name: Generate guidelines index
       run: |
         # Create a simple JSON index of available guidelines

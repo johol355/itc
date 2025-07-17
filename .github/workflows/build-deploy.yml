@@ -101,27 +101,16 @@ jobs:
           fi
         done
         
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm install js-yaml
+      
     - name: Generate guidelines index
-      run: |
-        # Create a simple JSON index of available guidelines
-        echo '{"guidelines": [' > docs/guidelines/index.json
-        first=true
-        for file in guidelines/*.qmd; do
-          if [ -f "$file" ]; then
-            filename=$(basename "$file" .qmd)
-            title=$(grep -m 1 '^title:' "$file" | sed 's/title: *"*\([^"]*\)"*/\1/' || echo "$filename")
-            
-            if [ "$first" = true ]; then
-              first=false
-            else
-              echo ',' >> docs/guidelines/index.json
-            fi
-            
-            echo "  {\"id\": \"$filename\", \"title\": \"$title\", \"html\": \"$filename.html\", \"pdf\": \"../pdfs/$filename.pdf\"}" >> docs/guidelines/index.json
-          fi
-        done
-        echo ']' >> docs/guidelines/index.json
-        echo '}' >> docs/guidelines/index.json
+      run: node scripts/generate-index.js
         
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3

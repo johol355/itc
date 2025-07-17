@@ -127,12 +127,11 @@ class MedicalGuidelinesApp {
         const guideline = this.guidelines.find(g => g.id === guidelineId);
         if (!guideline) return;
         
-        // Show loading state
-        this.showGuidelineLoading(guideline.title);
-        
+        // EMERGENCY READY: Try to load content immediately without loading state
         try {
             // Load guideline content if not already loaded
             if (!guideline.htmlContent) {
+                // Try cache first for instant access
                 const response = await fetch(`guidelines/${guidelineId}.html`);
                 if (response.ok) {
                     let html = await response.text();
@@ -148,12 +147,13 @@ class MedicalGuidelinesApp {
                 }
             }
             
-            // Display the guideline
+            // Display the guideline immediately
             this.showGuidelineContent(guideline);
             
         } catch (error) {
             console.error('Error loading guideline:', error);
-            this.showGuidelineError(guideline.title);
+            // Show error immediately without loading state delays
+            this.showGuidelineError(guideline.title, guidelineId);
         }
     }
     
@@ -214,17 +214,31 @@ class MedicalGuidelinesApp {
         this.renderGuidelines();
     }
     
-    showGuidelineError(title) {
+    showGuidelineError(title, guidelineId) {
         const container = document.getElementById('guidelines-list');
         container.innerHTML = `
             <div class="guideline-viewer">
                 <div class="guideline-header">
                     <button class="button secondary" onclick="window.medicalApp.showGuidelinesList()">← Back to Guidelines</button>
-                    <h2>${title}</h2>
+                    <h2>⚠️ ${title}</h2>
                 </div>
-                <div class="error">
-                    <p>Unable to load this guideline. Please check your connection and try again.</p>
-                    <button class="button" onclick="window.medicalApp.openGuideline('${title}')">Retry</button>
+                <div class="emergency-error">
+                    <div class="error-content">
+                        <h3>Emergency Access Issue</h3>
+                        <p><strong>This guideline is not available offline.</strong></p>
+                        <p>To ensure emergency access:</p>
+                        <ul>
+                            <li>Connect to WiFi/cellular network</li>
+                            <li>Open this guideline once to cache it</li>
+                            <li>It will then be available offline</li>
+                        </ul>
+                        <div class="error-actions">
+                            ${navigator.onLine ? 
+                                `<button class="button" onclick="window.medicalApp.openGuideline('${guidelineId}')">🔄 Try Again</button>` :
+                                `<button class="button offline" disabled>📶 Connect to Internet First</button>`
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
         `;

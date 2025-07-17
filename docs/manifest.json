@@ -2,7 +2,7 @@
   "name": "Medical Guidelines",
   "short_name": "MedGuides",
   "description": "Progressive Web App for medical guidelines and protocols",
-  "start_url": "/",
+  "start_url": "/itc/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2196F3",

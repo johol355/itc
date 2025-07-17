@@ -247,3 +247,131 @@ main section:first-child {
     50% { transform: scale(0.98); }
     100% { transform: scale(1); }
 }
+
+/* Guideline Viewer Styles */
+.guideline-viewer {
+    min-height: 60vh;
+}
+
+.guideline-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.guideline-header h2 {
+    margin: 0;
+    color: #2196F3;
+    flex-grow: 1;
+}
+
+.guideline-content {
+    line-height: 1.6;
+    max-width: none;
+}
+
+.guideline-content h1,
+.guideline-content h2,
+.guideline-content h3,
+.guideline-content h4 {
+    color: #2196F3;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.guideline-content h1:first-child,
+.guideline-content h2:first-child {
+    margin-top: 0;
+}
+
+.guideline-content p {
+    margin-bottom: 1rem;
+}
+
+.guideline-content ul,
+.guideline-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.guideline-content li {
+    margin-bottom: 0.5rem;
+}
+
+.guideline-content blockquote {
+    border-left: 4px solid #2196F3;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: #666;
+    font-style: italic;
+}
+
+.guideline-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.guideline-content th,
+.guideline-content td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.guideline-content th {
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.error {
+    text-align: center;
+    padding: 3rem;
+    color: #f44336;
+}
+
+.error p {
+    margin-bottom: 1rem;
+}
+
+/* Offline indicator */
+.offline-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #f44336;
+    color: white;
+    text-align: center;
+    padding: 0.5rem;
+    z-index: 1000;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+.offline-indicator.show {
+    transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .guideline-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .guideline-content {
+        font-size: 0.9rem;
+    }
+}

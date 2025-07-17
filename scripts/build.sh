@@ -59,8 +59,13 @@ done
 
 # Update web app with latest guidelines
 echo "Updating web application..."
+# Install dependencies if needed
+if ! npm list js-yaml >/dev/null 2>&1; then
+    echo "Installing js-yaml..."
+    npm install js-yaml
+fi
 # Generate JSON index of guidelines for the web app
-node scripts/generate-index.js 2>/dev/null || echo "Note: generate-index.js not found, skipping index generation"
+node scripts/generate-index.js
 
 echo "Build complete!"
 echo "📄 PDFs generated in: pdfs/"

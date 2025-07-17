@@ -117,13 +117,38 @@ section {
     }
 }
 
-/* Hide sections by default (SPA navigation) */
+/* Show guidelines section by default */
 main section {
-    display: none;
+    display: block;
 }
 
-main section:first-child {
-    display: block;
+/* Search container */
+.search-container {
+    margin-bottom: 2rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    border-color: #2196F3;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+}
+
+.no-results p {
+    font-size: 1.1rem;
 }
 
 /* Interactive Checklist Styles */

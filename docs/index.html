@@ -17,23 +17,13 @@
     <div id="app">
         <header>
             <h1>Medical Guidelines</h1>
-            <nav>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#guidelines">Guidelines</a></li>
-                    <li><a href="#search">Search</a></li>
-                </ul>
-            </nav>
         </header>
         
         <main>
-            <section id="home">
-                <h2>Welcome to Medical Guidelines</h2>
-                <p>Access comprehensive medical guidelines and protocols.</p>
-            </section>
-            
             <section id="guidelines">
-                <h2>Available Guidelines</h2>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search guidelines..." class="search-input">
+                </div>
                 <div id="guidelines-list">
                     <!-- Guidelines will be loaded here -->
                 </div>

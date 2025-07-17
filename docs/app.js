@@ -21,8 +21,8 @@ class MedicalGuidelinesApp {
         // Load guidelines
         this.loadGuidelines();
         
-        // Setup navigation
-        this.setupNavigation();
+        // Setup search
+        this.setupSearch();
     }
     
     setupOfflineDetection() {
@@ -84,22 +84,43 @@ class MedicalGuidelinesApp {
         `).join('');
     }
     
-    setupNavigation() {
-        // Simple SPA navigation
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = e.target.getAttribute('href').substring(1);
-                this.showSection(target);
+    setupSearch() {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.filterGuidelines(e.target.value);
             });
-        });
+        }
     }
     
-    showSection(sectionId) {
-        document.querySelectorAll('main section').forEach(section => {
-            section.style.display = 'none';
-        });
-        document.getElementById(sectionId).style.display = 'block';
+    filterGuidelines(searchTerm) {
+        const filteredGuidelines = this.guidelines.filter(guideline => 
+            guideline.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            guideline.description.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        this.renderFilteredGuidelines(filteredGuidelines);
+    }
+    
+    renderFilteredGuidelines(guidelines) {
+        const container = document.getElementById('guidelines-list');
+        if (guidelines.length === 0) {
+            container.innerHTML = `
+                <div class="no-results">
+                    <p>No guidelines found matching your search.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = guidelines.map(guideline => `
+            <div class="guideline-card">
+                <h3>${guideline.title}</h3>
+                <p>${guideline.description}</p>
+                <div class="guideline-actions">
+                    <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">Open Guideline</button>
+                </div>
+            </div>
+        `).join('');
     }
     
     async openGuideline(guidelineId) {
@@ -154,7 +175,7 @@ class MedicalGuidelinesApp {
         container.innerHTML = `
             <div class="guideline-viewer">
                 <div class="guideline-header">
-                    <button class="button secondary" onclick="window.medicalApp.showSection('guidelines')">← Back to Guidelines</button>
+                    <button class="button secondary" onclick="window.medicalApp.showGuidelinesList()">← Back to Guidelines</button>
                     <h2>${guideline.title}</h2>
                 </div>
                 <div class="guideline-content">
@@ -162,6 +183,12 @@ class MedicalGuidelinesApp {
                 </div>
             </div>
         `;
+        
+        // Hide search bar when viewing guideline
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer) {
+            searchContainer.style.display = 'none';
+        }
         
         // Initialize checklists after content is loaded
         setTimeout(() => {
@@ -171,12 +198,28 @@ class MedicalGuidelinesApp {
         }, 100);
     }
     
+    showGuidelinesList() {
+        // Show search bar
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer) {
+            searchContainer.style.display = 'block';
+        }
+        
+        // Clear search and show all guidelines
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        
+        this.renderGuidelines();
+    }
+    
     showGuidelineError(title) {
         const container = document.getElementById('guidelines-list');
         container.innerHTML = `
             <div class="guideline-viewer">
                 <div class="guideline-header">
-                    <button class="button secondary" onclick="window.medicalApp.showSection('guidelines')">← Back to Guidelines</button>
+                    <button class="button secondary" onclick="window.medicalApp.showGuidelinesList()">← Back to Guidelines</button>
                     <h2>${title}</h2>
                 </div>
                 <div class="error">

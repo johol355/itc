@@ -10,6 +10,14 @@ class MedicalGuidelinesApp {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').then((registration) => {
                 console.log('Service Worker registered:', registration);
+                
+                // Listen for content updates
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data.type === 'CONTENT_UPDATED') {
+                        console.log('Content updated, refreshing guidelines...');
+                        this.loadGuidelines(); // Silently reload guidelines
+                    }
+                });
             }).catch((error) => {
                 console.log('Service Worker registration failed:', error);
             });

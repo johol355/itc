@@ -96,7 +96,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch event - Cache first, then network
+// Fetch event - Cache first for reliability, but check for updates silently
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
@@ -108,10 +108,16 @@ self.addEventListener('fetch', (event) => {
     
     event.respondWith(
         (async () => {
-            // Try cache first
+            // ALWAYS serve from cache first for instant access
             const cachedResponse = await caches.match(request);
             if (cachedResponse) {
                 console.log('Serving from cache:', request.url);
+                
+                // Silently check for updates in the background (don't block)
+                if (url.pathname === '/itc/guidelines/index.json') {
+                    silentlyUpdateIndex();
+                }
+                
                 return cachedResponse;
             }
             
@@ -159,5 +165,59 @@ self.addEventListener('fetch', (event) => {
         })()
     );
 });
+
+// Silent background update function
+async function silentlyUpdateIndex() {
+    try {
+        console.log('Checking for index updates...');
+        const response = await fetch('/itc/guidelines/index.json', { cache: 'no-cache' });
+        
+        if (response.ok) {
+            const newIndex = await response.json();
+            const cache = await caches.open(GUIDELINES_CACHE);
+            const cachedIndexResponse = await cache.match('/itc/guidelines/index.json');
+            
+            if (cachedIndexResponse) {
+                const cachedIndex = await cachedIndexResponse.json();
+                
+                // Compare versions or count to see if update needed
+                if (newIndex.count !== cachedIndex.count || 
+                    newIndex.generated !== cachedIndex.generated) {
+                    
+                    console.log('Index updated, caching new guidelines...');
+                    
+                    // Update the index
+                    await cache.put('/itc/guidelines/index.json', response.clone());
+                    
+                    // Cache any new guidelines
+                    for (const guideline of newIndex.guidelines) {
+                        const guidelineUrl = `/itc/guidelines/${guideline.html}`;
+                        try {
+                            const guidelineResponse = await fetch(guidelineUrl, { cache: 'no-cache' });
+                            if (guidelineResponse.ok) {
+                                await cache.put(guidelineUrl, guidelineResponse.clone());
+                                console.log(`✓ Updated: ${guideline.title}`);
+                            }
+                        } catch (error) {
+                            console.warn(`Failed to update ${guideline.title}:`, error);
+                        }
+                    }
+                    
+                    // Notify the app about updates
+                    self.clients.matchAll().then(clients => {
+                        clients.forEach(client => {
+                            client.postMessage({
+                                type: 'CONTENT_UPDATED',
+                                message: 'New guidelines available'
+                            });
+                        });
+                    });
+                }
+            }
+        }
+    } catch (error) {
+        console.log('Silent update check failed (this is normal offline):', error);
+    }
+}
 
 console.log('Service Worker loaded');

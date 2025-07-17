@@ -1,10 +1,30 @@
 {
+  "generated": "2025-01-17T12:00:00.000Z",
+  "count": 2,
   "guidelines": [
     {
       "id": "sample-guideline",
       "title": "Sample Medical Guideline",
+      "description": "Medical guideline: Sample Medical Guideline",
+      "author": "Medical Team",
+      "date": "2025-01-17",
+      "version": "1.0",
+      "status": "Draft",
+      "keywords": ["procedure", "checklist", "monitoring", "medical", "surgical", "patient safety", "protocol"],
       "html": "sample-guideline.html",
-      "pdf": "../pdfs/sample-guideline.pdf"
+      "pdf": "sample-guideline.pdf"
+    },
+    {
+      "id": "impella-test",
+      "title": "Impella Test",
+      "description": "Medical guideline: Impella Test",
+      "author": "Medical Team",
+      "date": "2025-01-17",
+      "version": "1.0",
+      "status": "Draft",
+      "keywords": ["impella", "mcs"],
+      "html": "impella-test.html",
+      "pdf": "impella-test.pdf"
     }
   ]
 }

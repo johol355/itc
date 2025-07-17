@@ -1,0 +1,28 @@
+---
+title: "New Guideline"
+author: "Medical Team"
+date: "2025-03-17"
+version: "1.0"
+status: "Draft"
+keywords: ["ventilator", "ARDS"]
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    include-after-body: 
+      - text: |
+          <link rel="stylesheet" href="../_extensions/checklist/checklist.css">
+          <script src="../_extensions/checklist/checklist.js"></script>
+  pdf:
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 11pt
+---
+
+## Overview
+
+This is a test guideline for ARDS
+
+## Indication
+
+Brief description of ventilators are used in ARDS.

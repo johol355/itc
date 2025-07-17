@@ -38,6 +38,12 @@ for file in guidelines/*.qmd; do
         # Render to HTML first (this always works)
         quarto render "$file" --to html --output-dir docs/guidelines
         
+        # Quarto sometimes creates nested directories, so move files to correct location
+        if [ -f "guidelines/docs/guidelines/$filename.html" ]; then
+            mv "guidelines/docs/guidelines/$filename.html" "docs/guidelines/"
+            rm -rf "guidelines/docs"
+        fi
+        
         # Try to render to PDF (with fallback)
         if quarto render "$file" --to pdf --output-dir pdfs 2>/dev/null; then
             echo "✓ PDF generated: $filename"

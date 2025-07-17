@@ -1,0 +1,10 @@
+{
+  "guidelines": [
+    {
+      "id": "sample-guideline",
+      "title": "Sample Medical Guideline",
+      "html": "sample-guideline.html",
+      "pdf": "../pdfs/sample-guideline.pdf"
+    }
+  ]
+}

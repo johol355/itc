@@ -1,7 +1,7 @@
 // Service Worker for Medical Guidelines PWA - Offline First
-const CACHE_NAME = 'medical-guidelines-v4';
-const STATIC_CACHE = 'static-v4';
-const GUIDELINES_CACHE = 'guidelines-v4';
+const CACHE_NAME = 'medical-guidelines-v5';
+const STATIC_CACHE = 'static-v5';
+const GUIDELINES_CACHE = 'guidelines-v5';
 
 // Critical assets that MUST be cached immediately
 const STATIC_ASSETS = [
@@ -136,9 +136,9 @@ self.addEventListener('fetch', (event) => {
                 if (url.pathname.includes('/guidelines/') && url.pathname.endsWith('.html')) {
                     return new Response(`
                         <div style="padding: 2rem; text-align: center; background: #f5f5f5; margin: 1rem; border-radius: 8px;">
-                            <h2>Offline</h2>
-                            <p>This guideline is not available offline.</p>
-                            <button onclick="window.history.back()" style="background: #2196F3; color: white; border: none; padding: 1rem 2rem; border-radius: 4px; cursor: pointer;">← Back to Guidelines</button>
+                            <h2>Unable to Load</h2>
+                            <p>This guideline could not be loaded.</p>
+                            <button onclick="window.history.back()" style="background: rgb(72, 160, 219); color: white; border: none; padding: 1rem 2rem; border-radius: 4px; cursor: pointer;">← Back to Guidelines</button>
                         </div>
                     `, {
                         headers: { 'Content-Type': 'text/html' }

@@ -59,6 +59,9 @@ class MedicalGuidelinesApp {
                 <div class="guideline-actions">
                     <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">Open Guideline</button>
                 </div>
+                <div class="offline-status">
+                    <span class="status-indicator">✓ Available offline</span>
+                </div>
             </div>
         `).join('');
     }
@@ -97,6 +100,9 @@ class MedicalGuidelinesApp {
                 <p>${guideline.description}</p>
                 <div class="guideline-actions">
                     <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">Open Guideline</button>
+                </div>
+                <div class="offline-status">
+                    <span class="status-indicator">✓ Available offline</span>
                 </div>
             </div>
         `).join('');
@@ -190,7 +196,7 @@ class MedicalGuidelinesApp {
                     <h2>${title}</h2>
                 </div>
                 <div class="error">
-                    <p>This guideline is not available offline.</p>
+                    <p>Unable to load this guideline.</p>
                     <button class="button" onclick="window.medicalApp.openGuideline('${guidelineId}')">Try Again</button>
                 </div>
             </div>

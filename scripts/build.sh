@@ -67,6 +67,18 @@ fi
 # Generate JSON index of guidelines for the web app
 node scripts/generate-index.js
 
+# Copy PDF files to guidelines folder for web access
+echo "Copying PDF guidelines..."
+if [ -d "pdfs" ]; then
+    # Copy external PDF guidelines to web directory
+    for pdf in pdfs/*.pdf; do
+        if [ -f "$pdf" ]; then
+            cp "$pdf" "docs/guidelines/"
+            echo "✓ Copied: $(basename "$pdf")"
+        fi
+    done
+fi
+
 # Update cache version to force cache refresh
 echo "Updating cache version..."
 node scripts/update-cache-version.js

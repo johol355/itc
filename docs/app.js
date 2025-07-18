@@ -142,9 +142,13 @@ class MedicalGuidelinesApp {
             
             this.guidelines = data.guidelines.map(guideline => ({
                 id: guideline.id,
+                type: guideline.type || 'qmd',
                 title: guideline.title,
                 description: guideline.description || `Medical guideline: ${guideline.title}`,
                 keywords: guideline.keywords || [],
+                source: guideline.source,
+                category: guideline.category,
+                pdf: guideline.pdf,
                 htmlContent: null // Will be loaded on demand
             }));
         } catch (error) {
@@ -169,11 +173,15 @@ class MedicalGuidelinesApp {
             <div class="guideline-card">
                 <h3>${guideline.title}</h3>
                 <p>${guideline.description}</p>
+                ${guideline.source ? `<p class="guideline-source">Source: ${guideline.source}</p>` : ''}
                 <div class="guideline-actions">
-                    <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">Open Guideline</button>
+                    <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">
+                        ${guideline.type === 'pdf' ? 'Open PDF' : 'Open Guideline'}
+                    </button>
                 </div>
                 <div class="offline-status">
                     <span class="status-indicator">✓ Available offline</span>
+                    ${guideline.type === 'pdf' ? '<span class="type-indicator">PDF</span>' : ''}
                 </div>
             </div>
         `).join('');
@@ -215,11 +223,15 @@ class MedicalGuidelinesApp {
             <div class="guideline-card">
                 <h3>${guideline.title}</h3>
                 <p>${guideline.description}</p>
+                ${guideline.source ? `<p class="guideline-source">Source: ${guideline.source}</p>` : ''}
                 <div class="guideline-actions">
-                    <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">Open Guideline</button>
+                    <button class="button" onclick="window.medicalApp.openGuideline('${guideline.id}')">
+                        ${guideline.type === 'pdf' ? 'Open PDF' : 'Open Guideline'}
+                    </button>
                 </div>
                 <div class="offline-status">
                     <span class="status-indicator">✓ Available offline</span>
+                    ${guideline.type === 'pdf' ? '<span class="type-indicator">PDF</span>' : ''}
                 </div>
             </div>
         `).join('');
@@ -229,7 +241,13 @@ class MedicalGuidelinesApp {
         const guideline = this.guidelines.find(g => g.id === guidelineId);
         if (!guideline) return;
         
-        // EMERGENCY READY: Try to load content immediately without loading state
+        if (guideline.type === 'pdf') {
+            // Show PDF viewer for external PDF guidelines
+            this.showPDFViewer(guideline);
+            return;
+        }
+        
+        // EMERGENCY READY: Try to load QMD content immediately without loading state
         try {
             // Load guideline content if not already loaded
             if (!guideline.htmlContent) {
@@ -256,6 +274,33 @@ class MedicalGuidelinesApp {
             console.error('Error loading guideline:', error);
             // Show error immediately without loading state delays
             this.showGuidelineError(guideline.title, guidelineId);
+        }
+    }
+    
+    showPDFViewer(guideline) {
+        const container = document.getElementById('guidelines-list');
+        container.innerHTML = `
+            <div class="guideline-viewer">
+                <div class="guideline-header">
+                    <button class="button secondary" onclick="window.medicalApp.showGuidelinesList()">← Back to Guidelines</button>
+                    <h2>${guideline.title}</h2>
+                    ${guideline.source ? `<p class="guideline-source">Source: ${guideline.source}</p>` : ''}
+                </div>
+                <div class="pdf-viewer-container">
+                    <iframe src="web/viewer.html?file=../guidelines/${guideline.pdf}" 
+                            width="100%" height="800px" style="border: none; border-radius: 8px;">
+                        <p>Your browser doesn't support PDF viewing. 
+                           <a href="guidelines/${guideline.pdf}" target="_blank">Download PDF</a>
+                        </p>
+                    </iframe>
+                </div>
+            </div>
+        `;
+        
+        // Hide search bar when viewing PDF
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer) {
+            searchContainer.style.display = 'none';
         }
     }
     

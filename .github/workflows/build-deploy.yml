@@ -84,6 +84,18 @@ jobs:
         
         echo "Build complete!"
         
+    - name: Copy PDF guidelines
+      run: |
+        # Copy external PDF guidelines to web directory
+        if [ -d "pdfs" ]; then
+          for pdf in pdfs/*.pdf; do
+            if [ -f "$pdf" ]; then
+              cp "$pdf" "docs/guidelines/"
+              echo "✓ Copied: $(basename "$pdf")"
+            fi
+          done
+        fi
+        
     - name: Warm cache for new guidelines
       run: |
         # Pre-warm cache by fetching all guidelines once

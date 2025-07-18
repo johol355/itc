@@ -36,6 +36,31 @@ function extractMetadata(qmdPath) {
     }
 }
 
+// Load PDF metadata
+function loadPDFMetadata() {
+    try {
+        const pdfMetadataPath = path.join(__dirname, '../pdfs/pdf-metadata.json');
+        if (fs.existsSync(pdfMetadataPath)) {
+            const pdfMetadata = JSON.parse(fs.readFileSync(pdfMetadataPath, 'utf8'));
+            return pdfMetadata.metadata.map(pdf => ({
+                id: path.basename(pdf.filename, '.pdf'),
+                type: 'pdf',
+                title: pdf.title,
+                description: pdf.description,
+                author: pdf.author,
+                date: pdf.date,
+                keywords: pdf.keywords || [],
+                source: pdf.source,
+                category: pdf.category,
+                pdf: pdf.filename
+            }));
+        }
+    } catch (error) {
+        console.warn('Could not load PDF metadata:', error.message);
+    }
+    return [];
+}
+
 // Generate index.json for web app
 function generateIndex() {
     const guidelinesDir = path.join(__dirname, '../guidelines');
@@ -51,23 +76,30 @@ function generateIndex() {
         .filter(file => file.endsWith('.qmd'))
         .map(file => path.join(guidelinesDir, file));
     
-    // Extract metadata from each file
-    const guidelines = qmdFiles
+    // Extract metadata from each QMD file
+    const qmdGuidelines = qmdFiles
         .map(extractMetadata)
-        .filter(Boolean); // Remove null entries
+        .filter(Boolean) // Remove null entries
+        .map(guideline => ({ ...guideline, type: 'qmd' }));
+    
+    // Load PDF guidelines
+    const pdfGuidelines = loadPDFMetadata();
+    
+    // Combine all guidelines
+    const allGuidelines = [...qmdGuidelines, ...pdfGuidelines];
     
     // Create index object
     const index = {
         generated: new Date().toISOString(),
-        count: guidelines.length,
-        guidelines: guidelines
+        count: allGuidelines.length,
+        guidelines: allGuidelines
     };
     
     // Write index.json
     const indexPath = path.join(outputDir, 'index.json');
     fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
     
-    console.log(`Generated index with ${guidelines.length} guidelines`);
+    console.log(`Generated index with ${allGuidelines.length} guidelines (${qmdGuidelines.length} QMD, ${pdfGuidelines.length} PDF)`);
     console.log(`Index saved to: ${indexPath}`);
     
     return index;

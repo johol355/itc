@@ -535,12 +535,52 @@ main section {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
     border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .status-indicator {
     font-size: 0.85rem;
     color: #28a745;
     font-weight: 500;
+}
+
+.type-indicator {
+    font-size: 0.75rem;
+    background: #6c757d;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+/* PDF Guidelines */
+.guideline-source {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.pdf-viewer-container {
+    margin-top: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Dark mode for PDF elements */
+[data-theme="dark"] .guideline-source {
+    color: #ccc;
+}
+
+[data-theme="dark"] .type-indicator {
+    background: #555;
+}
+
+[data-theme="dark"] .pdf-viewer-container {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 

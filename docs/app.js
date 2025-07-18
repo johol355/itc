@@ -136,9 +136,23 @@ class MedicalGuidelinesApp {
     
     async loadGuidelines() {
         try {
-            // Load guidelines from generated index
-            const response = await fetch('guidelines/index.json');
+            // Load guidelines from generated index with cache busting
+            const timestamp = Date.now();
+            const response = await fetch(`guidelines/index.json?v=${timestamp}`);
             const data = await response.json();
+            
+            // Check if we have a newer version
+            const lastVersion = localStorage.getItem('lastGuidelinesVersion');
+            const currentVersion = data.generated;
+            
+            if (lastVersion && lastVersion !== currentVersion) {
+                console.log('New guidelines version detected:', currentVersion);
+                // Clear old content cache to ensure fresh content
+                this.guidelines.forEach(g => g.htmlContent = null);
+            }
+            
+            // Store current version
+            localStorage.setItem('lastGuidelinesVersion', currentVersion);
             
             this.guidelines = data.guidelines.map(guideline => ({
                 id: guideline.id,
@@ -251,8 +265,9 @@ class MedicalGuidelinesApp {
         try {
             // Load guideline content if not already loaded
             if (!guideline.htmlContent) {
-                // Try cache first for instant access
-                const response = await fetch(`guidelines/${guidelineId}.html`);
+                // Try cache first for instant access, but check for updates
+                const timestamp = Date.now();
+                const response = await fetch(`guidelines/${guidelineId}.html?v=${timestamp}`);
                 if (response.ok) {
                     let html = await response.text();
                     
@@ -287,7 +302,7 @@ class MedicalGuidelinesApp {
                     ${guideline.source ? `<p class="guideline-source">Source: ${guideline.source}</p>` : ''}
                 </div>
                 <div class="pdf-viewer-container">
-                    <iframe src="web/viewer.html?file=../guidelines/${guideline.pdf}" 
+                    <iframe src="web/viewer.html?file=../guidelines/${guideline.pdf}?v=${Date.now()}" 
                             width="100%" height="800px" style="border: none; border-radius: 8px;">
                         <p>Your browser doesn't support PDF viewing. 
                            <a href="guidelines/${guideline.pdf}" target="_blank">Download PDF</a>

@@ -96,7 +96,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch event - Cache first for reliability, but check for updates silently
+// Fetch event - Smart caching with cache busting support
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
@@ -108,16 +108,44 @@ self.addEventListener('fetch', (event) => {
     
     event.respondWith(
         (async () => {
-            // ALWAYS serve from cache first for instant access
+            // Check if this is a cache-busted request (has ?v= parameter)
+            const isCacheBusted = url.searchParams.has('v');
+            
+            if (isCacheBusted) {
+                // Cache-busted request - always fetch from network first
+                console.log('Cache-busted request, fetching from network:', request.url);
+                try {
+                    const networkResponse = await fetch(request);
+                    if (networkResponse.ok) {
+                        // Cache the fresh response (remove cache-busting parameter for cache key)
+                        const cleanUrl = new URL(request.url);
+                        cleanUrl.searchParams.delete('v');
+                        const cleanRequest = new Request(cleanUrl.toString());
+                        
+                        const cache = url.pathname.includes('/guidelines/') ? 
+                            await caches.open(GUIDELINES_CACHE) : 
+                            await caches.open(STATIC_CACHE);
+                        
+                        cache.put(cleanRequest, networkResponse.clone());
+                        console.log('Updated cache with fresh content:', cleanUrl.toString());
+                    }
+                    return networkResponse;
+                } catch (error) {
+                    console.log('Network failed for cache-busted request, trying cache:', error);
+                    // If network fails, try cache as fallback
+                    const cleanUrl = new URL(request.url);
+                    cleanUrl.searchParams.delete('v');
+                    const cachedResponse = await caches.match(cleanUrl.toString());
+                    if (cachedResponse) {
+                        return cachedResponse;
+                    }
+                }
+            }
+            
+            // Regular request - try cache first
             const cachedResponse = await caches.match(request);
             if (cachedResponse) {
                 console.log('Serving from cache:', request.url);
-                
-                // Silently check for updates in the background (don't block)
-                if (url.pathname === '/itc/guidelines/index.json') {
-                    silentlyUpdateIndex();
-                }
-                
                 return cachedResponse;
             }
             

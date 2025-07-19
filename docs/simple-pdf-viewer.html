@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes">
+    <title>PDF Viewer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #404040;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        .pdf-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .pdf-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .simple-toolbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-info {
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .zoom-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .zoom-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* Hide PDF.js toolbar and sidebar */
+        .pdf-iframe {
+            /* The PDF.js viewer will be styled via URL parameters */
+            touch-action: pan-x pan-y pinch-zoom;
+        }
+        
+        /* Enable pinch-to-zoom on mobile */
+        .pdf-container {
+            touch-action: pan-x pan-y pinch-zoom;
+        }
+        
+        @media (max-width: 768px) {
+            .simple-toolbar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 8px;
+            }
+            
+            .nav-controls, .zoom-controls {
+                gap: 8px;
+            }
+            
+            .nav-btn, .zoom-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-container">
+        <div class="simple-toolbar">
+            <div class="nav-controls">
+                <button class="nav-btn" id="prevPage">← Previous</button>
+                <span class="page-info">
+                    Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                </span>
+                <button class="nav-btn" id="nextPage">Next →</button>
+            </div>
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="zoomOut">−</button>
+                <button class="zoom-btn" id="zoomIn">+</button>
+                <button class="nav-btn" id="fitWidth">Fit Width</button>
+            </div>
+        </div>
+        <iframe id="pdfFrame" class="pdf-iframe"></iframe>
+    </div>
+
+    <script>
+        // Get PDF file from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const pdfFile = urlParams.get('file');
+        
+        if (pdfFile) {
+            // Load PDF.js viewer with simplified toolbar
+            const pdfFrame = document.getElementById('pdfFrame');
+            const viewerUrl = `web/viewer.html?file=${encodeURIComponent(pdfFile)}#toolbar=0&navpanes=0&scrollbar=0`;
+            pdfFrame.src = viewerUrl;
+            
+            // Simple navigation controls
+            let currentPage = 1;
+            let totalPages = 1;
+            
+            // Wait for PDF to load and get page info
+            pdfFrame.onload = function() {
+                // Try to communicate with PDF.js viewer
+                try {
+                    const pdfViewer = pdfFrame.contentWindow;
+                    
+                    // Update page info periodically
+                    setInterval(() => {
+                        try {
+                            if (pdfViewer.PDFViewerApplication && pdfViewer.PDFViewerApplication.pdfDocument) {
+                                const pdfApp = pdfViewer.PDFViewerApplication;
+                                currentPage = pdfApp.page;
+                                totalPages = pdfApp.pagesCount;
+                                
+                                document.getElementById('currentPage').textContent = currentPage;
+                                document.getElementById('totalPages').textContent = totalPages;
+                                
+                                // Update button states
+                                document.getElementById('prevPage').disabled = currentPage <= 1;
+                                document.getElementById('nextPage').disabled = currentPage >= totalPages;
+                            }
+                        } catch (e) {
+                            // Ignore cross-origin errors
+                        }
+                    }, 500);
+                } catch (e) {
+                    console.log('PDF viewer communication limited due to cross-origin restrictions');
+                }
+            };
+            
+            // Navigation controls
+            document.getElementById('prevPage').onclick = function() {
+                try {
+                    pdfFrame.contentWindow.PDFViewerApplication.page--;
+                } catch (e) {
+                    console.log('Navigation not available');
+                }
+            };
+            
+            document.getElementById('nextPage').onclick = function() {
+                try {
+                    pdfFrame.contentWindow.PDFViewerApplication.page++;
+                } catch (e) {
+                    console.log('Navigation not available');
+                }
+            };
+            
+            // Zoom controls
+            document.getElementById('zoomIn').onclick = function() {
+                try {
+                    const pdfApp = pdfFrame.contentWindow.PDFViewerApplication;
+                    pdfApp.pdfViewer.currentScale *= 1.25;
+                } catch (e) {
+                    console.log('Zoom not available');
+                }
+            };
+            
+            document.getElementById('zoomOut').onclick = function() {
+                try {
+                    const pdfApp = pdfFrame.contentWindow.PDFViewerApplication;
+                    pdfApp.pdfViewer.currentScale *= 0.8;
+                } catch (e) {
+                    console.log('Zoom not available');
+                }
+            };
+            
+            document.getElementById('fitWidth').onclick = function() {
+                try {
+                    const pdfApp = pdfFrame.contentWindow.PDFViewerApplication;
+                    pdfApp.pdfViewer.currentScaleValue = 'page-width';
+                } catch (e) {
+                    console.log('Fit width not available');
+                }
+            };
+        } else {
+            document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: white;">No PDF file specified</div>';
+        }
+    </script>
+</body>
+</html>

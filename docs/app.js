@@ -302,7 +302,7 @@ class MedicalGuidelinesApp {
                     ${guideline.source ? `<p class="guideline-source">Source: ${guideline.source}</p>` : ''}
                 </div>
                 <div class="pdf-viewer-container">
-                    <iframe src="web/viewer.html?file=../guidelines/${guideline.pdf}?v=${Date.now()}" 
+                    <iframe src="simple-pdf-viewer.html?file=guidelines/${guideline.pdf}" 
                             width="100%" height="800px" style="border: none; border-radius: 8px;">
                         <p>Your browser doesn't support PDF viewing. 
                            <a href="guidelines/${guideline.pdf}" target="_blank">Download PDF</a>
